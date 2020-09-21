@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CameraScript : MonoBehaviour
 {
+    //my code
+    public Camera cam;
 
     /*
     Writen by Windexglow 11-13-10.  Use it, edit it, steal it I don't care.  
@@ -38,10 +40,10 @@ public class CameraScript : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            lastMouse = Input.mousePosition; // $CTK reset when we begin
-        }
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    lastMouse = Input.mousePosition; // $CTK reset when we begin
+        //}
 
         if (!rotateOnlyIfMousedown ||
             (rotateOnlyIfMousedown && Input.GetMouseButton(1)))
@@ -55,7 +57,6 @@ public class CameraScript : MonoBehaviour
         }
 
         //Keyboard commands
-        float f = 0.0f;
         Vector3 p = GetBaseInput();
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -84,6 +85,37 @@ public class CameraScript : MonoBehaviour
         else
         {
             transform.Translate(p);
+        }
+
+        //my code
+        if(Input.GetMouseButtonDown(0))
+        {
+            Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 1f));
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+
+                if (hit.transform.tag == "Terrain")
+                {
+                    hit.transform.GetComponent<Marching>().PlaceTerrain(hit.point);
+                }
+            }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 1f));
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+
+                if (hit.transform.tag == "Terrain")
+                {
+                    hit.transform.GetComponent<Marching>().RemoveTerrain(hit.point);
+                }
+            }
         }
 
     }

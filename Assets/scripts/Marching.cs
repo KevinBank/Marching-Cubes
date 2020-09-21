@@ -6,6 +6,7 @@ public class Marching : MonoBehaviour
 {
 
     MeshFilter meshFilter;
+    MeshCollider meshCollider;
 
     float terrainSurface = 0.5f;
     int width = 32;
@@ -19,6 +20,8 @@ public class Marching : MonoBehaviour
     {
 
         meshFilter = GetComponent<MeshFilter>();
+        meshCollider = GetComponent<MeshCollider>();
+        transform.tag = "Terrain";
         terrainMap = new float[width + 1, height + 1, width + 1];
         PopulateTerrainMap();
         CreateMeshData();
@@ -146,6 +149,24 @@ public class Marching : MonoBehaviour
 
     }
 
+    public void PlaceTerrain(Vector3 pos)
+    {
+
+        Vector3Int v3Int = new Vector3Int(Mathf.CeilToInt(pos.x), Mathf.CeilToInt(pos.y), Mathf.CeilToInt(pos.z));
+        terrainMap[v3Int.x, v3Int.y, v3Int.z] = 0f;
+        CreateMeshData();
+
+    }
+
+    public void RemoveTerrain(Vector3 pos)
+    {
+
+        Vector3Int v3Int = new Vector3Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
+        terrainMap[v3Int.x, v3Int.y, v3Int.z] = 1f;
+        CreateMeshData();
+
+    }
+
     float SampleTerrain (Vector3Int point)
     {
 
@@ -161,6 +182,7 @@ public class Marching : MonoBehaviour
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
+        meshCollider.sharedMesh = mesh;
 
     }
 
