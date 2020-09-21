@@ -38,18 +38,8 @@ public class Marching : MonoBehaviour
                 for (int z = 0; z < width; z++)
                 {
 
-                    // Create an array of floats representing each corner of a cube and get the value from our terrainMap.
-                    float[] cube = new float[8];
-                    for (int i = 0; i < 8; i++)
-                    {
-
-                        Vector3Int corner = new Vector3Int(x, y, z) + CornerTable[i];
-                        cube[i] = terrainMap[corner.x, corner.y, corner.z];
-
-                    }
-
                     // Pass the value into our MarchCube function.
-                    MarchCube(new Vector3(x, y, z), cube);
+                    MarchCube(new Vector3Int(x, y, z));
 
                 }
             }
@@ -82,8 +72,15 @@ public class Marching : MonoBehaviour
         }
     }
 
-    void MarchCube(Vector3 position, float[] cube)
+    void MarchCube(Vector3Int position)
     {
+        float[] cube = new float[8];
+        for (int i = 0; i < 8; i++)
+        {
+
+            cube[i] = SampleTerrain(position + CornerTable[i]);
+
+        }
 
         // Get the configuration index of this cube.
         int configIndex = GetCubeConfiguration(cube);
@@ -146,6 +143,13 @@ public class Marching : MonoBehaviour
 
         vertices.Clear();
         triangles.Clear();
+
+    }
+
+    float SampleTerrain (Vector3Int point)
+    {
+
+        return terrainMap[point.x, point.y, point.z];
 
     }
 
