@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Chunk
 {
-    GameObject chunkObject;
+    public GameObject chunkObject;
     MeshFilter meshFilter;
     MeshCollider meshCollider;
     MeshRenderer meshRenderer;
 
-    Vector3Int chunkPos;
+    Vector3Int chunkPosition;
 
     float[,,] terrainMap;
 
@@ -23,8 +23,9 @@ public class Chunk
     public Chunk (Vector3Int _position)
     {
         chunkObject = new GameObject();
-        chunkPos = _position;
-        chunkObject.transform.position = chunkPos;
+        chunkObject.name = string.Format("Chunk {0}, {1}", _position.x, _position.z);
+        chunkPosition = _position;
+        chunkObject.transform.position = chunkPosition;
 
         meshFilter = chunkObject.AddComponent<MeshFilter>();
         meshCollider = chunkObject.AddComponent<MeshCollider>();
@@ -74,7 +75,7 @@ public class Chunk
                 {
 
                     // Get a terrain height using regular old Perlin noise.
-                    float thisHeight = GameData.GetTerrainHeight(x + chunkPos.x, z + chunkPos.z);
+                    float thisHeight = GameData.GetTerrainHeight(x + chunkPosition.x, z + chunkPosition.z);
 
                     // Set the value of this point in the terrainMap.
                     terrainMap[x, y, z] = (float)y - thisHeight;

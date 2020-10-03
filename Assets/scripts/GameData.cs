@@ -8,9 +8,12 @@ public static class GameData
     public static int ChunkWidth = 16;
     public static int ChunkHeight = 250;
 
+    public static float BaseTerrainHeight = 60f;
+    public static float TerrainHeightRange = 10f;
+
     public static float GetTerrainHeight (int x, int z)
     {
-        return (float)ChunkHeight * Mathf.PerlinNoise((float)x / 16f * 1.5f + 0.001f, (float)z / 16f * 1.5f + 0.001f);
+        return (float)TerrainHeightRange * Mathf.PerlinNoise((float)x / 16f * 1.5f + 0.001f, (float)z / 16f * 1.5f + 0.001f) + BaseTerrainHeight;
     }
 
     public static Vector3Int[] CornerTable = new Vector3Int[8] {
