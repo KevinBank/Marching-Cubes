@@ -163,7 +163,16 @@ public class Chunk
     {
 
         Vector3Int v3Int = new Vector3Int(Mathf.CeilToInt(pos.x), Mathf.CeilToInt(pos.y), Mathf.CeilToInt(pos.z));
+        v3Int -= chunkPosition;
         terrainMap[v3Int.x, v3Int.y, v3Int.z] = 0f;
+        terrainMap[v3Int.x + 1, v3Int.y, v3Int.z] = 0f;
+        terrainMap[v3Int.x - 1, v3Int.y, v3Int.z] = 0f;
+        terrainMap[v3Int.x, v3Int.y, v3Int.z + 1] = 0f;
+        terrainMap[v3Int.x, v3Int.y, v3Int.z - 1] = 0f;
+        terrainMap[v3Int.x + 1, v3Int.y, v3Int.z + 1] = 0f;
+        terrainMap[v3Int.x + 1, v3Int.y, v3Int.z - 1] = 0f;
+        terrainMap[v3Int.x - 1, v3Int.y, v3Int.z + 1] = 0f;
+        terrainMap[v3Int.x - 1, v3Int.y, v3Int.z + 1] = 0f;
         CreateMeshData();
 
     }
@@ -172,7 +181,16 @@ public class Chunk
     {
 
         Vector3Int v3Int = new Vector3Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
+        v3Int -= chunkPosition;
         terrainMap[v3Int.x, v3Int.y, v3Int.z] = 1f;
+        terrainMap[v3Int.x + 1, v3Int.y, v3Int.z] = 1f;
+        terrainMap[v3Int.x - 1, v3Int.y, v3Int.z] = 1f;
+        terrainMap[v3Int.x, v3Int.y, v3Int.z + 1] = 1f;
+        terrainMap[v3Int.x, v3Int.y, v3Int.z - 1] = 1f;
+        terrainMap[v3Int.x + 1, v3Int.y, v3Int.z + 1] = 1f;
+        terrainMap[v3Int.x + 1, v3Int.y, v3Int.z - 1] = 1f;
+        terrainMap[v3Int.x - 1, v3Int.y, v3Int.z + 1] = 1f;
+        terrainMap[v3Int.x - 1, v3Int.y, v3Int.z + 1] = 1f;
         CreateMeshData();
 
     }

@@ -28,4 +28,13 @@ public class WorldGenerator : MonoBehaviour
         Debug.Log(string.Format("{0} x {0} World generated. ({1}) Chunks total.", (WorldSizeInChunks * GameData.ChunkWidth), (WorldSizeInChunks * WorldSizeInChunks)));
 
     }
+
+    public Chunk GetChunkFromVector3 (Vector3 pos)
+    {
+        int x = (int)pos.x;
+        int y = (int)pos.y;
+        int z = (int)pos.z;
+
+        return chunks[new Vector3Int(x, y, z)];
+    }
 }

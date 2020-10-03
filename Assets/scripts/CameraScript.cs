@@ -5,6 +5,7 @@ public class CameraScript : MonoBehaviour
 {
     //my code
     public Camera cam;
+    public WorldGenerator world;
 
     /*
     Writen by Windexglow 11-13-10.  Use it, edit it, steal it I don't care.  
@@ -98,7 +99,7 @@ public class CameraScript : MonoBehaviour
 
                 if (hit.transform.tag == "Terrain")
                 {
-                    hit.transform.GetComponent<Chunk>().PlaceTerrain(hit.point);
+                    world.GetChunkFromVector3(hit.transform.position).PlaceTerrain(hit.point);
                 }
             }
         }
@@ -113,7 +114,7 @@ public class CameraScript : MonoBehaviour
 
                 if (hit.transform.tag == "Terrain")
                 {
-                    hit.transform.GetComponent<Chunk>().RemoveTerrain(hit.point);
+                    world.GetChunkFromVector3(hit.transform.position).RemoveTerrain(hit.point);
                 }
             }
         }
