@@ -98,7 +98,7 @@ public class CameraScript : MonoBehaviour
 
                 if (hit.transform.tag == "Terrain")
                 {
-                    hit.transform.GetComponent<Marching>().PlaceTerrain(hit.point);
+                    hit.transform.GetComponent<Chunk>().PlaceTerrain(hit.point);
                 }
             }
         }
@@ -113,7 +113,7 @@ public class CameraScript : MonoBehaviour
 
                 if (hit.transform.tag == "Terrain")
                 {
-                    hit.transform.GetComponent<Marching>().RemoveTerrain(hit.point);
+                    hit.transform.GetComponent<Chunk>().RemoveTerrain(hit.point);
                 }
             }
         }

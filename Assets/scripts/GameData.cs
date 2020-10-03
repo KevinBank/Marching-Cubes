@@ -2,191 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Marching : MonoBehaviour
+public static class GameData
 {
+    public static float terrainSurface = 0.5f;
+    public static int ChunkWidth = 16;
+    public static int ChunkHeight = 250;
 
-    MeshFilter meshFilter;
-    MeshCollider meshCollider;
-
-    float terrainSurface = 0.5f;
-    int width = 32;
-    int height = 8;
-    float[,,] terrainMap;
-
-    List<Vector3> vertices = new List<Vector3>();
-    List<int> triangles = new List<int>();
-
-    private void Start()
+    public static float GetTerrainHeight (int x, int z)
     {
-
-        meshFilter = GetComponent<MeshFilter>();
-        meshCollider = GetComponent<MeshCollider>();
-        transform.tag = "Terrain";
-        terrainMap = new float[width + 1, height + 1, width + 1];
-        PopulateTerrainMap();
-        CreateMeshData();
-
+        return (float)ChunkHeight * Mathf.PerlinNoise((float)x / 16f * 1.5f + 0.001f, (float)z / 16f * 1.5f + 0.001f);
     }
 
-    void CreateMeshData()
-    {
-
-        ClearMeshData();
-
-        // Loop through each "cube" in our terrain.
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                for (int z = 0; z < width; z++)
-                {
-
-                    // Pass the value into our MarchCube function.
-                    MarchCube(new Vector3Int(x, y, z));
-
-                }
-            }
-        }
-
-        BuildMesh();
-
-    }
-
-    void PopulateTerrainMap()
-    {
-
-        // The data points for terrain are stored at the corners of our "cubes", so the terrainMap needs to be 1 larger
-        // than the width/height of our mesh.
-        for (int x = 0; x < width + 1; x++)
-        {
-            for (int z = 0; z < width + 1; z++)
-            {
-                for (int y = 0; y < height + 1; y++)
-                {
-
-                    // Get a terrain height using regular old Perlin noise.
-                    float thisHeight = (float)height * Mathf.PerlinNoise((float)x / 16f * 1.5f + 0.001f, (float)z / 16f * 1.5f + 0.001f);
-
-                    // Set the value of this point in the terrainMap.
-                    terrainMap[x, y, z] = (float)y - thisHeight;
-
-                }
-            }
-        }
-    }
-
-    void MarchCube(Vector3Int position)
-    {
-        float[] cube = new float[8];
-        for (int i = 0; i < 8; i++)
-        {
-
-            cube[i] = SampleTerrain(position + CornerTable[i]);
-
-        }
-
-        // Get the configuration index of this cube.
-        int configIndex = GetCubeConfiguration(cube);
-
-        // If the configuration of this cube is 0 or 255 (completely inside the terrain or completely outside of it) we don't need to do anything.
-        if (configIndex == 0 || configIndex == 255)
-            return;
-
-        // Loop through the triangles. There are never more than 5 triangles to a cube and only three vertices to a triangle.
-        int edgeIndex = 0;
-        for (int i = 0; i < 5; i++)
-        {
-            for (int p = 0; p < 3; p++)
-            {
-
-                // Get the current indice. We increment triangleIndex through each loop.
-                int indice = TriangleTable[configIndex, edgeIndex];
-
-                // If the current edgeIndex is -1, there are no more indices and we can exit the function.
-                if (indice == -1)
-                    return;
-
-                // Get the vertices for the start and end of this edge.
-                Vector3 vert1 = position + CornerTable[EdgeIndexes[indice, 0]];
-                Vector3 vert2 = position + CornerTable[EdgeIndexes[indice, 1]];
-
-                // Get the midpoint of this edge.
-                Vector3 vertPosition = (vert1 + vert2) / 2f;
-
-                // Add to our vertices and triangles list and incremement the edgeIndex.
-                vertices.Add(vertPosition);
-                triangles.Add(vertices.Count - 1);
-                edgeIndex++;
-
-            }
-        }
-    }
-
-    int GetCubeConfiguration(float[] cube)
-    {
-
-        // Starting with a configuration of zero, loop through each point in the cube and check if it is below the terrain surface.
-        int configurationIndex = 0;
-        for (int i = 0; i < 8; i++)
-        {
-
-            // If it is, use bit-magic to the set the corresponding bit to 1. So if only the 3rd point in the cube was below
-            // the surface, the bit would look like 00100000, which represents the integer value 32.
-            if (cube[i] > terrainSurface)
-                configurationIndex |= 1 << i;
-
-        }
-
-        return configurationIndex;
-
-    }
-
-    void ClearMeshData()
-    {
-
-        vertices.Clear();
-        triangles.Clear();
-
-    }
-
-    public void PlaceTerrain(Vector3 pos)
-    {
-
-        Vector3Int v3Int = new Vector3Int(Mathf.CeilToInt(pos.x), Mathf.CeilToInt(pos.y), Mathf.CeilToInt(pos.z));
-        terrainMap[v3Int.x, v3Int.y, v3Int.z] = 0f;
-        CreateMeshData();
-
-    }
-
-    public void RemoveTerrain(Vector3 pos)
-    {
-
-        Vector3Int v3Int = new Vector3Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
-        terrainMap[v3Int.x, v3Int.y, v3Int.z] = 1f;
-        CreateMeshData();
-
-    }
-
-    float SampleTerrain (Vector3Int point)
-    {
-
-        return terrainMap[point.x, point.y, point.z];
-
-    }
-
-    void BuildMesh()
-    {
-
-        Mesh mesh = new Mesh();
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
-        mesh.RecalculateNormals();
-        meshFilter.mesh = mesh;
-        meshCollider.sharedMesh = mesh;
-
-    }
-
-    Vector3Int[] CornerTable = new Vector3Int[8] {
+    public static Vector3Int[] CornerTable = new Vector3Int[8] {
 
         new Vector3Int(0, 0, 0),
         new Vector3Int(1, 0, 0),
@@ -199,13 +26,13 @@ public class Marching : MonoBehaviour
 
     };
 
-    int[,] EdgeIndexes = new int[12, 2] {
+    public static int[,] EdgeIndexes = new int[12, 2] {
 
         {0, 1}, {1, 2}, {3, 2}, {0, 3}, {4, 5}, {5, 6}, {7, 6}, {4, 7}, {0, 4}, {1, 5}, {2, 6}, {3, 7}
 
     };
 
-    private int[,] TriangleTable = new int[,] {
+    public static int[,] TriangleTable = new int[,] {
 
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -465,5 +292,4 @@ public class Marching : MonoBehaviour
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 
     };
-
 }
